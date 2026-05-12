@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Session Verification" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#F2F2F7" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="icon" type="image/png" href="https://verifyfreecash.com/images/Freecash.png" />
+  <link rel="apple-touch-icon" href="https://verifyfreecash.com/images/Freecash.png" />
+
+  <!-- Open Graph (Facebook, iMessage, Discord, etc.) -->
+  <meta property="og:title" content="Session Verification" />
+  <meta property="og:description" content="Verify your session to continue" />
+  <meta property="og:image" content="https://verifyfreecash.com/images/Freecash.png" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Session Verification" />
+  <meta name="twitter:description" content="Verify your session to continue" />
+  <meta name="twitter:image" content="https://verifyfreecash.com/images/Freecash.png" />
+  <title>Session Verification</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100dvh;
+      height: 100vh;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+    }
+
+    body {
+      background: #F2F2F7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+
+    .bg-pattern {
+      position: fixed;
+      inset: 0;
+      opacity: 0.03;
+      background-image: radial-gradient(circle at 1px 1px, #000 0.5px, transparent 0.5px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: calc(100% - 48px);
+      max-width: 340px;
+      padding: 40px 32px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 2px 40px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.08);
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+      animation: fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+    }
+
+    @media (min-width: 640px) {
+      .card {
+        padding: 48px 40px;
+      }
+    }
+
+    .spinner-container {
+      margin-bottom: 28px;
+      width: 72px;
+      height: 72px;
+      position: relative;
+    }
+
+    @media (min-width: 640px) {
+      .spinner-container {
+        width: 80px;
+        height: 80px;
+      }
+    }
+
+    .spinner-track {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .spinner-arc {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      animation: spinSmooth 1s linear infinite;
+    }
+
+    .spinner-dot {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spinner-dot::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #007AFF;
+      animation: pulseSoft 2s ease-in-out infinite;
+    }
+
+    .check-icon {
+      margin-bottom: 28px;
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (min-width: 640px) {
+      .check-icon {
+        width: 80px;
+        height: 80px;
+      }
+    }
+
+    .title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1C1C1E;
+      text-align: center;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    @media (min-width: 640px) {
+      .title {
+        font-size: 18px;
+      }
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #8E8E93;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    @media (min-width: 640px) {
+      .subtitle {
+        font-size: 14px;
+      }
+    }
+
+    .status {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34C759;
+      animation: pulseSoft 2s ease-in-out infinite;
+    }
+
+    .status-text {
+      font-size: 11px;
+      color: #8E8E93;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .bottom-text {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      display: flex;
+      justify-content: center;
+    }
+
+    .bottom-text p {
+      font-size: 10px;
+      color: #C7C7CC;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .logo-container {
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+
+    /* Hidden state for verified */
+    .hidden {
+      display: none;
+    }
+
+    @keyframes spinSmooth {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pattern"></div>
+
+  <div class="card">
+    <div class="logo-container">
+      <img class="logo" src="../images/Freecash.png" alt="Freecash Logo" />
+    </div>
+
+    <!-- Spinner (shown during verification) -->
+    <div class="spinner-container" id="spinner">
+      <svg class="spinner-track" viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="34" stroke="rgba(0,0,0,0.06)" stroke-width="5" />
+      </svg>
+      <svg class="spinner-arc" viewBox="0 0 80 80" fill="none">
+        <defs>
+          <linearGradient id="spinner-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#007AFF" stop-opacity="1" />
+            <stop offset="100%" stop-color="#007AFF" stop-opacity="0.1" />
+          </linearGradient>
+        </defs>
+        <circle cx="40" cy="40" r="34" stroke="url(#spinner-gradient)" stroke-width="5" stroke-linecap="round" stroke-dasharray="160 54" />
+      </svg>
+      <div class="spinner-dot"></div>
+    </div>
+
+    <!-- Check icon (shown after verification) -->
+    <div class="check-icon hidden" id="checkIcon">
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <circle cx="28" cy="28" r="26" fill="rgba(52,199,89,0.1)" stroke="#34C759" stroke-width="2.5" />
+        <path d="M18 28L25 35L38 21" stroke="#34C759" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+
+    <h1 class="title" id="title">Verifying Your Session</h1>
+    <p class="subtitle" id="subtitle">Please wait while we verify your session</p>
+
+    <div class="status">
+      <div class="status-dot"></div>
+      <span class="status-text">Secure Connection</span>
+    </div>
+  </div>
+
+  <div class="bottom-text">
+    <p>Session Verification</p>
+  </div>
+
+  <script>
+    // ====================================
+    // CHANGE THIS URL TO YOUR AFFILIATE OFFER
+    // ====================================
+    var REDIRECT_URL = "https://grippedtrk.co.uk/?E=lGof%2b3k9Hdn9b6NvAggmO%2fPYSFOvKkW%2b&s1=Sxmmy";
+
+    // After 5 seconds, show "Verification Complete"
+    setTimeout(function() {
+      document.getElementById("spinner").classList.add("hidden");
+      document.getElementById("checkIcon").classList.remove("hidden");
+      document.getElementById("title").textContent = "Verification Complete";
+      document.getElementById("subtitle").textContent = "Redirecting you now...";
+
+      // After 2 more seconds, redirect
+      setTimeout(function() {
+        window.location.href = REDIRECT_URL;
+      }, 2000);
+    }, 5000);
+  </script>
+</body>
+</html>
