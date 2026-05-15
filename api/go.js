@@ -1,8 +1,4 @@
-const OFFER_URL = "https://grippedtrk.co.uk/?F=ggnFF0eDd8mBiv66W6TTvPYSF0vKkW%25b";
-
-// Change this depending on what your affiliate network uses.
-// Common options: subid, s1, aff_sub, aff_sub1, sub1
-const SUBID_PARAM = "subid";
+const OFFER_BASE = "https://grippedtrk.co.uk/?F=ggnFF0eDd8mBiv66W6TTvPYSF0vKkW%25b";
 
 const LINK_MAP = {
   "1": "Sxmmy",
@@ -13,27 +9,19 @@ const LINK_MAP = {
 };
 
 export default function handler(req, res) {
-  const { code } = req.query;
-
-  const cleanCode = String(code || "")
+  const code = String(req.query.code || "")
     .replace(/[^0-9]/g, "")
     .slice(0, 10);
 
-  const subid = LINK_MAP[cleanCode];
+  const subid = LINK_MAP[code];
 
   if (!subid) {
     return res.status(404).send("Link not found.");
   }
 
-  const destination = new URL(OFFER_URL);
+  let redirectUrl = `${OFFER_BASE}&s1=${encodeURIComponent(subid)}`;
 
-  // Main affiliate tracking SubID
-  destination.searchParams.set(SUBID_PARAM, subid);
-
-  // Optional: also pass the simple public code
-  destination.searchParams.set("link_id", cleanCode);
-
-  // Preserve ad tracking parameters
+  // Optional click ID passthrough
   const passthroughParams = [
     "ScCid",
     "sccid",
@@ -50,11 +38,22 @@ export default function handler(req, res) {
   for (const param of passthroughParams) {
     const value = req.query[param];
     if (value) {
-      destination.searchParams.set(param, String(value));
+      redirectUrl += `&${encodeURIComponent(param)}=${encodeURIComponent(String(value))}`;
     }
   }
 
-  res.setHeader("Cache-Control", "no-store, max-age=0");
+  // Debug mode: visit /1?debug=1 to see final link without redirecting
+  if (req.query.debug === "1") {
+    return res.status(200).json({
+      code,
+      subid,
+      redirectTo: redirectUrl
+    });
+  }
 
-  return res.redirect(302, destination.toString());
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+
+  return res.redirect(302, redirectUrl);
 }
