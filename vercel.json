@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/r/:subid",
+      "destination": "/api/redirect?subid=:subid"
+    },
+    {
+      "source": "/",
+      "destination": "/api/redirect?subid=default"
+    }
+  ]
+}
