@@ -1,4 +1,4 @@
-const DESTINATION_URL = "https://grippedtrk.co.uk/?F=ggnFF0eDd8mBiv66W6TTvPYSF0vKkW%b&s1=BaggedB58";
+const DESTINATION_URL = "https://grippedtrk.co.uk/?E=C6vwlNsYejYkvGfYyVVD2fPYSFOvKkW%2b&s1=BaggedB58";
 
 function getFirst(value) {
   if (Array.isArray(value)) return value[0];
