@@ -1,4 +1,4 @@
-const OFFER_URL = "https://grippedtrk.co.uk/?E=ggnFE0eDd8mBiv66W6TTvPPYSFOvKkW%2b&s1=";
+const OFFER_URL = "https://grippedtrk.co.uk/?F=ggnFF0eDd8mBiv66W6TTvPYSF0vKkW%25b";
 
 // Change this depending on what your affiliate network uses.
 // Common options: subid, s1, aff_sub, aff_sub1, sub1
